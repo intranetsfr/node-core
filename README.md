@@ -1,1 +1,2 @@
 # node-core
+``` npm install```
