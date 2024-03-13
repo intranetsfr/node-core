@@ -1,0 +1,68 @@
+{% extends '../templates/admin_layout.twig' %}
+{% block admin %}
+	<div class="mdl-cell mdl-cell--6-col"></div>
+	<div class="mdl-cell mdl-cell--6-col" align="end">
+		<a href="/admin/{{ subtitle }}.form" class="mdl-button mdl-button--raised mdl-button--colored mdl-color--green-100">
+			<i class="mdl-color-text--green-400 material-icons">add</i>
+			Add a new data
+		</a>
+		<a href="/admin/{{subtitle}}.structure" class="mdl-button mdl-button--raised mdl-button--colored">
+			<i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">storage</i>
+			Structure
+		</a>
+		<a href="/admin/{{subtitle}}.api" class="mdl-button mdl-button--raised mdl-button--colored mdl-color--red-900 mdl-color-text--black">
+			<i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">api</i>
+			API
+		</a>
+	</div>
+	<div class="mdl-cell mdl-cell--12-col">
+		<table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp full">
+			<thead>
+				<tr>
+					{% for key, value in structure %}
+						<th class="mdl-data-table__cell--non-numeric">{{ key }}</th>
+					{% endfor %}
+					<th class="mdl-data-table__cell--non-numeric">options</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for data in tableData %}
+					<tr>
+						{% for key, value in structure %}
+							<td class="mdl-data-table__cell--non-numeric">{{ data[key] |truncate(50) }}</td>
+						{% endfor %}
+						<td>
+							<button id="menu-top-left__{{data.id}}" class="mdl-button mdl-js-button mdl-button--icon">
+								<i class="material-icons">more_vert</i>
+							</button>
+
+							<ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" data-mdl-for="menu-top-left__{{data.id}}">
+								<li>
+									<a href="/admin/{{subtitle}}.form?id={{data.id}}" class="mdl-menu__item  mdl-color-text--orange mdl-menu__item--full-bleed-divider">
+										Edit
+									</a>
+								</li>
+								<li>
+									<a href="javascript:deleteItem({{data.id}})" class="mdl-menu__item mdl-color-text--red">
+										Delete
+									</a>
+								</li>
+								
+							</ul>
+
+						</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+	<script type="text/javascript">
+		function deleteItem(id) {
+if (confirm("Delete this record ?")) {
+window.location.href = `/admin/{{subtitle}}.data?id=${id}&action=delete`;
+
+}
+}
+	</script>
+{% endblock %}
+

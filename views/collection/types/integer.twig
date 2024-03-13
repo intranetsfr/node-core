@@ -1,0 +1,5 @@
+
+  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+    <input class="mdl-textfield__input" type="number" id="{{key}}" name="{{key}}"  {% if value.allowNull == false%} required {% endif %}  {% if key == "id"%} disabled {% endif %} value="{{data}}">
+    <label class="mdl-textfield__label" for="{{key}}">{{key}} : </label>
+  </div>

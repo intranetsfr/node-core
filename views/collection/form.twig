@@ -1,0 +1,39 @@
+{% extends '../templates/admin_layout.twig' %}
+{% block admin %}
+	<div class="mdl-cell mdl-cell--6-col"></div>
+	<div class="mdl-cell mdl-cell--6-col" align="end">
+		<a href="/admin/{{subtitle}}.data" class="mdl-button mdl-button--raised mdl-button--colored mdl-color--green-100">
+			<i class="mdl-color-text--green-400 material-icons">arrow_back</i>
+			Show data
+		</a>
+		<a href="/admin/{{subtitle}}.structure" class="mdl-button mdl-button--raised mdl-button--colored">
+			<i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">storage</i>
+			Structure
+		</a>
+	</div>
+	<div class="mdl-cell mdl-cell--3-col"></div>
+	<div class="mdl-cell mdl-cell--6-col">
+		<fieldset>
+			<legend>Edit form</legend>
+			<form action="/admin/{{subtitle}}.form{% if id is defined %}?id={{id}}{% endif %}" method="POST" enctype="multipart/form-data">
+				<div class="grid">
+					{% for key, value in structure %}
+						<div class="cell cell--12-col">
+							{% include "collection/types/"~value.template~".twig" with {key: key, value: value, data: formData[key]}%}
+						</div>
+					{% endfor %}
+				</div>
+
+
+				<div align="center">
+					<br/>
+					<button class="mdl-button mdl-button--raised mdl-button--colored">
+						<i class="material-icons">save</i>
+						Save
+					</button>
+				</div>
+			</form>
+		</fieldset>
+	</div>
+</div>{% endblock %}
+

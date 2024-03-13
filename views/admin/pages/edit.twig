@@ -1,0 +1,11 @@
+{% set notUseBody = true %}
+{% extends '../../layout.twig' %}
+{% block body %}
+	<frameset cols="60%,40%" borderColor="#00F0FF" framespacing="20" border="20">
+		<frame src="/{{page.url}}{{page.extension}}"/>
+		<frameset rows="100%,0%" id="frameset_editor">
+			<frame src="/admin/pages/{{page.url}}{{page.extension}}.tree"  id="tree"/>
+			<frame src="" id="propreties"/>
+		</frameset>
+	</frameset>
+{% endblock %}

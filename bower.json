@@ -1,0 +1,25 @@
+{
+  "name": "node-core",
+  "description": "Node Core App",
+  "main": "index.js",
+  "authors": [
+    "ROTY Jeremy <rotyjeremy@gmail.com>"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "node",
+    "express",
+    "core"
+  ],
+  "homepage": "https://github.com/intranetsfr/node-core",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "material-design-lite": "^1.3.0"
+  }
+}

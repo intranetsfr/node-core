@@ -1,0 +1,23 @@
+<html>
+<head>
+    <title>{{ title }}</title>
+    <meta name="theme-color" content="#FFC0CB" />
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="NodeCore">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% if css is defined %}
+        {% for c in css %}
+            <link rel="stylesheet" href="{{ c }}"/>
+        {% endfor %}
+    {% endif %}
+</head>
+<body>
+{% block body %}{% endblock %}
+{% if js is defined %}
+    {% for j in js%}
+        <script type="text/javascript" src="{{ j }}"></script>
+    {% endfor %}
+{% endif %}
+</body>
+</html>

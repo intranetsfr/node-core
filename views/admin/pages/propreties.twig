@@ -1,0 +1,38 @@
+{% extends '../../layout.twig' %}
+{% block body %}
+	<div class="mdl-grid">
+		<div class="mdl-cell mdl-cell--12-col" align="end">
+			<a href="javascript:Intranets.pages.propretiesStatus(false)" class="mdl-button mdl-button--raised mdl-button--colored">Close</a>
+		</div>
+		<div class="mdl-cell mdl-cell--12-col">
+			<fieldset>
+				<legend>Edit
+					{{element.function | upper}}</legend>
+				<form action="/admin/pages/propreties?id={{element.id}}" method="post">
+					{% if element.function != "html" %}
+						<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+							<input class="mdl-textfield__input" type="text" id="template_name" name="template_name" value="{{template_name}}">
+							<label class="mdl-textfield__label" for="template_name">
+								Template name:
+							</label>
+							<span class="mdl-textfield__error">Input is not a number!</span>
+						</div>
+					{% endif %}
+					{% for key,field in propreties[0] %}
+						{% set type = 'admin/pages/type/' ~ field[0].type ~ '.twig'%}
+						{% with { field: field[0],name:key } %}
+						{% include type %}
+						{% endwith %}
+					{% endfor %}
+					<div align="center">
+						<button class="mdl-button mdl-button--raised mdl-button--colored mdl-color--green">
+							<i class="material-icons">save</i>
+							Save
+						</button>
+					</div>
+				</form>
+			</fieldset>
+		</div>
+	</div>
+{% endblock %}
+

@@ -1,0 +1,82 @@
+{% extends '../templates/admin_layout.twig' %}
+{% block admin %}
+	<div class="mdl-cell mdl-cell--6-col"></div>
+	<div class="mdl-cell mdl-cell--6-col" align="end">
+		<a href="/admin/{{ subtitle }}.data" class="mdl-button mdl-button--raised mdl-button--colored mdl-color--green-100">
+			<i class="mdl-color-text--green-400 material-icons">arrow_back</i>
+			Show data
+		</a>
+		<a href="/admin/{{subtitle}}.structure" class="mdl-button mdl-button--raised mdl-button--colored">
+			<i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">storage</i>
+			Structure
+		</a>
+		<a href="/admin/{{subtitle}}.api" class="mdl-button mdl-button--raised mdl-button--colored mdl-color--red-900 mdl-color-text--black">
+			<i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">api</i>
+			API
+		</a>
+	</div>
+	<div class="mdl-cell mdl-cell--12-col">
+		<table
+			class="mdl-data-table mdl-js-data-table mdl-shadow--2dp full">
+			{#~
+									            
+									            <thead>
+													<tr>
+									                
+														<th class="mdl-data-table__cell--non-numeric">options</th>
+													</tr>
+												</thead>
+									            #}
+			<tbody>
+				<tr>
+					<td class="mdl-data-table__cell--non-numeric">
+						<a href="#">{{ subtitle}}/get</a>
+					</td>
+					<td class="mdl-data-table__cell--non-numeric">
+						POST
+					</td>
+					<td class="mdl-data-table__cell--non-numeric">
+						<a href="#" class="mdl-button mdl-button--raised">
+							<i class="material-icons">key</i>
+						</a>
+						<a href="#" class="mdl-button mdl-button--raised">
+							<i class="material-icons">key</i>
+						</a>
+					</td>
+				</tr>
+
+			</tbody>
+
+		</table>
+	</div>
+	<div class="mdl-cell mdl-cell--12-col">
+		<fieldset>
+			<legend>Manage API</legend>
+            <form id="api-form">
+  <div class="form-group">
+    <label for="route">Chemin de l'API :</label>
+    <input type="text" class="form-control" id="route" name="route" required>
+  </div>
+  
+  <div class="form-group">
+    <label for="method">Méthode :</label>
+    <select class="form-control" id="method" name="method" required>
+      <option value="">Sélectionnez une méthode</option>
+      <option value="GET">GET</option>
+      <option value="POST">POST</option>
+      <option value="PUT">PUT</option>
+      <option value="DELETE">DELETE</option>
+    </select>
+  </div>
+  
+  <div class="form-group">
+    <label for="payload">Payload (JSON) :</label>
+    <textarea class="form-control" id="payload" name="payload"></textarea>
+  </div>
+  
+  <button type="submit" class="btn btn-primary">Envoyer</button>
+</form>
+		</fieldset>
+	</div>
+</div>{% endblock %}
+

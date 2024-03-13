@@ -1,0 +1,25 @@
+{% extends '../templates/layout.twig' %}
+{% block body %}
+    <!-- Numeric Textfield with Floating Label -->
+    <div class="container">
+        <fieldset>
+            <legend>Inscription</legend>
+            <form action="/users/login" method="post">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <input class="mdl-textfield__input" type="email" id="users_email" name="users_email">
+                    <label class="mdl-textfield__label" for="users_email">E-mail :</label>
+                    <span class="mdl-textfield__error">Input is not a number!</span>
+                </div>
+                <br/>
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <input class="mdl-textfield__input" type="text" id="users_password" name="users_password">
+                    <label class="mdl-textfield__label" for="users_password">Password :</label>
+                    <span class="mdl-textfield__error">Input is not a number!</span>
+                </div>
+                <div align="center">
+                    <button class="mdl-button mdl-button--colored mdl-button--raised">Subscribe</button>
+                </div>
+            </form>
+        </fieldset>
+    </div>
+{% endblock %}

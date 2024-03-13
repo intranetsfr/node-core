@@ -1,0 +1,35 @@
+{% extends '../templates/layout.twig' %}
+{% block body %}
+	<div class="mdl-grid">
+		<div class="mdl-cell mdl-cell--6-col mdl-cell--3-offset" align="center">
+			<fieldset>
+				<legend>Login</legend>
+                {% if error %}
+                <p class="mdl-color--black mdl-color-text--red">
+                    <strong>{{error}}</strong>
+                </p>
+                {% endif %}
+				<form action="/admin/auth" method="post">
+
+					<div class="mdl-textfield mdl-js-textfield">
+						<input class="mdl-textfield__input" type="text" required id="users_email" value="demo@intranets.fr" name="users_email">
+						<label class="mdl-textfield__label" for="users_email">E-mail :
+						</label>
+						<span class="mdl-textfield__error">E-mail is required</span>
+					</div>
+					<br/>
+
+					<div class="mdl-textfield mdl-js-textfield">
+						<input class="mdl-textfield__input" type="password" required value="demodemo" id="users_password" name="users_password">
+						<label class="mdl-textfield__label" for="users_password">Password :</label>
+						<span class="mdl-textfield__error">password is required</span>
+					</div>
+                    <br />
+                    <hr />
+                    <button class="mdl-button mdl-button--raised mdl-button--colored">[ ENTER ]</button>
+				</form>
+			</fieldset>
+		</div>
+	</div>
+{% endblock %}
+

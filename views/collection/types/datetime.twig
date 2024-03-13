@@ -1,0 +1,21 @@
+<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+	<input class="mdl-textfield__input" type="date" id="{{key}}" name="{{key}}"  {% if value.allowNull == false%} required {% endif %}
+	{% if key == "createdAt" or key == "updatedAt" %}
+	disabled
+	{% endif %}
+	value="{{data | date('Y-m-d')}}"
+	>
+	<label class="mdl-textfield__label" for="{{key}}">{{key}}
+		:
+	</label>
+</div>
+<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+	<input class="mdl-textfield__input" type="time" id="{{key}}_time" name="{{key}}_time"  {% if value.allowNull == false%} required {% endif %}
+	{% if key == "createdAt" or key == "updatedAt" %}
+	disabled
+	{% endif %}
+	value="{{data | date('H:i:s')}}"
+	>
+	<label class="mdl-textfield__label" for="{{key}}_time">Time :
+	</label>
+</div>

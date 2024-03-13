@@ -1,0 +1,80 @@
+{% extends '../templates/admin_layout.twig' %}
+{% block admin %}
+
+<div class="mdl-cell mdl-cell--12-col">
+  <fieldset>
+    <legend>Add a new page</legend>
+    <form action="/admin/pages/create" method="post" autocomplete="off">
+      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+        <input class="mdl-textfield__input" type="text" pattern="[a-z]+" id="pages__url" name="pages__url" required>
+        <label class="mdl-textfield__label" for="pages__name">PageURL :<label>
+        <br />
+        <span class="mdl-textfield__error">This field is required</span>
+      </div>
+      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+        <select class="mdl-textfield__input" type="text" id="pages__extension" name="pages__extension" required>
+          <option>.html</option>
+          <option>.pdf</option>
+        </select>
+        <label class="mdl-textfield__label" for="pages__name">Page'extension :<label>
+        <br />
+        <span class="mdl-textfield__error">This field is required</span>
+      </div>
+      <button href="#" class="mdl-button mdl-button--raised mdl-button--colored">
+          <i class="material-icons">add</i>
+          Add a new page
+      </button>
+    </form>
+  </fieldset>
+</div>
+<div class="mdl-cell mdl-cell--12-col">
+<table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp full">
+  <thead>
+    <tr>
+      <th>URL</th>
+      <th>Title</th>
+      <th>Description</th>
+      <th>Create</th>
+      <th>Modified</th>
+      <th>Options</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for page in pages %}
+    <tr>
+      <td><a href="/{{ page.url}}{{ page.extension}}" target="_blank">{{ page.url}}{{ page.extension}}</a></td>
+      <td>{{ page.name }}</td>
+      <td>{{ page.description }}</td>
+      <td>{{ page.createAt | date }}</td>
+      <td>{{ page.updateAt | date }}</td>
+      <td>
+            
+            <!-- Left aligned menu on top of button  -->
+        <button id="menu-top-left--{{ page.id }}"
+                class="mdl-button mdl-js-button mdl-button--icon">
+        <i class="material-icons">more_vert</i>
+        </button>
+
+        <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
+            data-mdl-for="menu-top-left--{{ page.id }}">
+        <a class="mdl-menu__item" href="/{{ page.url}}{{ page.extension}}" target="_blank">
+            <i class="material-icons">open_in_new</i>
+            Open in new tab
+        </a>
+        <a href="/admin/pages/{{ page.url}}{{ page.extension}}.edit" target="_blank" class="mdl-menu__item mdl-menu__item--full-bleed-divider">
+            <i class="material-icons">edit</i>
+            Edit
+        </a>
+        <a href="javascript:Intranets.pages.delete('{{page.id}}')" class="mdl-menu__item">
+            <i class="material-icons">delete</i>
+            Delete
+        </a>
+        </ul>
+
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

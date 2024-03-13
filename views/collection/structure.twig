@@ -1,0 +1,156 @@
+{% extends '../templates/admin_layout.twig' %}
+{% block admin %}
+	<div class="mdl-cell mdl-cell--6-col">
+
+		<a href="javascript:Intranets.structure.dialog_delete_show()" class="mdl-button mdl-button--raised mdl-button--colored mdl-color--red-700">
+			<i class="mdl-color-text--black material-icons">delete</i>
+			Remove this structure
+		</a>
+	</div>
+	<div class="mdl-cell mdl-cell--6-col" align="end">
+		<a href="/admin/{{subtitle}}.data" class="mdl-button mdl-button--raised mdl-button--colored mdl-color--green-100">
+			<i class="mdl-color-text--green-400 material-icons">arrow_back</i>
+			Show data
+		</a>
+		<a href="/admin/{{subtitle}}.structure" class="mdl-button mdl-button--raised mdl-button--colored">
+			<i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">storage</i>
+			Structure
+		</a>
+	</div>
+	<div class="mdl-cell mdl-cell--12-col">
+		<table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp full">
+			<thead>
+				<tr>
+					<th>Name
+					</th>
+					<th>Type</th>
+					<th>Required</th>
+					<th>primaryKey</th>
+					<th>unique</th>
+					<th>sort</th>
+					<th>Options</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% set previousKey = '' %}
+{% set nextKey = '' %}
+				{% for key, value in structure %}
+
+
+    {% if loop.last %}
+        {% set nextKey = '' %}
+    {% else %}
+        {% set nextKey = attribute(structure, loop.next.key) %}
+    {% endif %}
+					<tr>
+						<td class="mdl-data-table__cell--non-numeric">{{ key }}</td>
+						<td>{{ value['type'] }}</td>
+						<td>
+							{% if(value['allowNull'] == true)%}
+								<span class="mdl-color-text--red">
+									no
+								</span>
+							{%  else %}
+								<span class="mdl-color-text--green">yes</span>
+							{% endif %}
+						</td>
+						<td>{{ value['primaryKey'] }}</td>
+						<td>{{ value['unique'] }}</td>
+						<td>
+							<a href="/admin/{{subtitle}}.structure?key={{key}}&before={{previousKey}}" class="mdl-button mdl-button--fab mdl-button--mini-fab" {% if loop.first or key == "id" or previousKey == "id" %} disabled {% endif %}>
+								<i class="material-icons">arrow_upward</i>
+							</a>
+
+							<a href="/admin/{{subtitle}}.structure?key={{key}}&after={{nextKey}}" class="mdl-button mdl-button--fab mdl-button--mini-fab" {% if loop.last or key == "id"%} disabled {% endif %}>
+								<i class="material-icons">arrow_downward</i>
+							</a>
+							{% if loop.last   %}{% endif %}
+						</td>
+						<td>
+
+							<!-- Left aligned menu on top of button  -->
+							<button id="menu-top-left__{{ key }}" class="mdl-button mdl-js-button mdl-button--icon">
+								<i class="material-icons">more_vert</i>
+							</button>
+
+							<ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" data-mdl-for="menu-top-left__{{ key }}">
+								<li class="mdl-menu__item">Some Action</li>
+								<li class="mdl-menu__item mdl-menu__item--full-bleed-divider">
+									Edit
+								</li>
+								<li>
+									<form action="/admin/{{subtitle}}.structure.delete" method="post">
+										<input type="hidden" name="field_name" value="{{key}}"/>
+										<button class="mdl-menu__item full">
+											Delete
+										</button>
+									</form>
+								</li>
+							</ul>
+
+						</td>
+					</tr>
+					{% set previousKey = key %}
+				{% endfor %}
+			</tbody>
+		</table>
+		<hr/>
+		<fieldset>
+			<legend>Add a new type :</legend>
+			<form action="/admin/{{subtitle}}.structure" method="post" autcomplete="off">
+				<input type="hidden" name="table_name" value="{{subtitle}}"/>
+				<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+					<input class="mdl-textfield__input" type="text" id="structure_name" name="structure_name" required>
+					<label class="mdl-textfield__label" for="structure_name">Name :
+					</label>
+				</div>
+				<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+
+					<select class="mdl-textfield__input" type="text" id="structure_type" name="structure_type" required>
+						<option selected disabled value="">Choose type</option>
+						<optgroup label="Char">
+							<option value="string">String</option>
+							<option value="text">Text</option>
+						</optgroup>
+						<optgroup label="Number">
+							<option value="number">Int</option>
+							<option value="float">Float</option>
+							<option value="decimale">Decimale</option>
+						</optgroup>
+						<option value="boolean">Boolean</option>
+						<option value="date">Date</option>
+						<option value="file">File</option>
+					</select>
+					<label class="mdl-textfield__label" for="structure_type">Type :
+					</label>
+					{{ table_fields | json_encode}}
+				</div>
+				<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+					<label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="structure_isnull">
+						<input type="checkbox" id="structure_isnull" class="mdl-switch__input" name="structure_isnull">
+						<span class="mdl-switch__label">Required ?</span>
+					</label>
+				</div>
+
+				<button class="mdl-button mdl-button--colored mdl-button--raised">
+					<i class="material-icons">add</i>
+					Add
+				</button>
+
+			</form>
+		</fieldset>
+	</div>
+	<dialog class="mdl-dialog structure__delete">
+		<h4 class="mdl-dialog__title">Remove this structure ?</h4>
+		<div class="mdl-dialog__content">
+			<p>
+				Do you want really delete this structure ?
+			</p>
+		</div>
+		<div class="mdl-dialog__actions">
+			<a href="/admin/{{subtitle}}.structure.delete" class="mdl-button">Yes</a>
+			<button type="button" class="mdl-button close">No</button>
+		</div>
+	</dialog>
+{% endblock %}
+

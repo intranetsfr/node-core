@@ -1,0 +1,21 @@
+{% if value.defaultValue != "file" %}
+	<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+		<input class="mdl-textfield__input" type="text" id="{{key}}" name="{{key}}" {% if value.allowNull == "false"%} required {% endif %} value="{{data}}">
+		<label class="mdl-textfield__label" for="{{key}}">{{key}}
+			:
+		</label>
+	</div>
+{% else %}
+	<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+		<input class="mdl-textfield__input" type="file" id="{{key}}" name="{{key}}" {% if value.allowNull == false and data is null  %} required {% endif %} value="{{data}}">
+		<label class="mdl-textfield__label" for="{{key}}">{{key}}
+			:
+		</label>
+	</div>
+	{% if data %}
+	<br />
+	<input type="hidden" readonly value="{{data}}" name="{{key}}"/>
+	<a href="/{{data}}" target="_blank">{{data}}</a>
+	{% endif %}
+	<hr />
+{% endif %}
