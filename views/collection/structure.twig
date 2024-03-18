@@ -33,20 +33,20 @@
 			</thead>
 			<tbody>
 				{% set previousKey = '' %}
-{% set nextKey = '' %}
+				{% set nextKey = '' %}
 				{% for key, value in structure %}
 
 
-    {% if loop.last %}
-        {% set nextKey = '' %}
-    {% else %}
-        {% set nextKey = attribute(structure, loop.next.key) %}
-    {% endif %}
+					{% if loop.last %}
+						{% set nextKey = '' %}
+					{% else %}
+						{% set nextKey = attribute(structure, loop.next.key) %}
+					{% endif %}
 					<tr>
 						<td class="mdl-data-table__cell--non-numeric">{{ key }}</td>
 						<td>{{ value['type'] }}</td>
 						<td>
-							{% if(value['allowNull'] == true)%}
+							{% if(value['allowNull'])%}
 								<span class="mdl-color-text--red">
 									no
 								</span>

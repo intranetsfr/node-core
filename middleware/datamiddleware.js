@@ -1,14 +1,17 @@
 let DataMiddleware = {};
 const db = require("../models");
+const { QueryTypes } = require('sequelize');
 
-DataMiddleware.getTables = async (callback, error, usePagesUsers = false) => {
-  db.sequelize.getQueryInterface().showAllSchemas().then((tables) => {
-    //usePagesUsers == true ? callback(tables) : callback(tables.filter(element => element.name != "pages" && element.name != "users"))
-    usePagesUsers == true ? callback(tables) : callback(tables.filter(element => element.name != "pages"))
-  }).catch((err) => {
-    
-    console.log('showAllSchemas ERROR', err);
-  })
+
+DataMiddleware.getTables = async (callback, error) => {
+  try {
+    const tables = await db.sequelize.query("SHOW TABLES", { type: QueryTypes.SHOWTABLES });
+    const tableNames = tables;
+    callback(tableNames);
+  } catch (err) {
+    console.log('Error fetching table names:', err);
+    error(err);
+  }
 }
 DataMiddleware.getTablesFields = async (callback, error) => {
   try {

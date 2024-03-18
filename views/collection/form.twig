@@ -1,7 +1,7 @@
 {% extends '../templates/admin_layout.twig' %}
 {% block admin %}
 	<div class="mdl-cell mdl-cell--6-col"></div>
-	<div class="mdl-cell mdl-cell--6-col" align="end">
+	<div class="mdl-cell mdl-cell--6-col" align="right">
 		<a href="/admin/{{subtitle}}.data" class="mdl-button mdl-button--raised mdl-button--colored mdl-color--green-100">
 			<i class="mdl-color-text--green-400 material-icons">arrow_back</i>
 			Show data
@@ -19,14 +19,16 @@
 				<div class="grid">
 					{% for key, value in structure %}
 						<div class="cell cell--12-col">
-							{% include "collection/types/"~value.template~".twig" with {key: key, value: value, data: formData[key]}%}
+							{% include "collection/types/"~value.template~".twig" with {key: key, value: value, data: (formData[key]) }%}
 						</div>
 					{% endfor %}
 				</div>
-
-
 				<div align="center">
 					<br/>
+					<button class="mdl-button mdl-button--raised" type="reset">
+						<i class="material-icons">restart_alt</i>
+						Reset
+					</button>
 					<button class="mdl-button mdl-button--raised mdl-button--colored">
 						<i class="material-icons">save</i>
 						Save
