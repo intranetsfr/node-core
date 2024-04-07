@@ -1,6 +1,6 @@
 class Texts{
-    p(align=['center', 'left', 'right']){
-        return `<p align="${align}"></p>`;    
+    p(content:string){
+        return `<p></p>`;
     }
 }
 module.exports = Texts;

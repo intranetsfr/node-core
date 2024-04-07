@@ -1,13 +1,11 @@
 ﻿const db = require("../models");
 const auth = require("../middleware/auth");
 const pm = require("../middleware/page");
-const moment = require('moment');
-moment.locale('fr');
+const moment = require("moment");
+moment.locale("fr");
 const Pages = db.pages;
 exports.contact = (req, res) => {
-
   auth(req, res, () => {
-
     const Message = {
       firstname: req.body.firstname,
       lastname: req.body.lastname,
@@ -15,47 +13,43 @@ exports.contact = (req, res) => {
       message: req.body.message,
     };
     // Save Users in the database
-    Pages.create(Message)
-      .then(data => {
-        res.send({ result: true, message: "Votre message a bien été envoyé" })
-      });
+    Pages.create(Message).then((data) => {
+      res.send({ result: true, message: "Votre message a bien été envoyé" });
+    });
   });
 };
 exports.create = (req, res) => {
-
   auth(req, res, () => {
     const Page = {
       url: req.body.pages__url,
-      function: req.body.pages__extension.replace('.', ''),
+      function: req.body.pages__extension.replace(".", ""),
       extension: req.body.pages__extension,
       index: 0,
       parent: null,
-      description: `Page ${req.body.pages__url} is create...`
-
+      description: `Page ${req.body.pages__url} is create...`,
     };
     console.log(Page);
-    Pages.create(Page)
-      .then(data => {
-        res.redirect('/admin')
-      });
+    Pages.create(Page).then((data) => {
+      res.redirect("/admin");
+    });
   });
 };
 exports.edit = (req, res) => {
-
   auth(req, res, () => {
     let data = {};
     data.title = "Pages";
     data.subtitle = "Home";
     data.debug = req.params.extension;
-    data.js = [
-      '/javascripts/intranets.core.js'
-    ]
-    Pages.findOne({ raw: true, where: { url: req.params.url, extension: req.params.extension } }).then(page => {
+    data.js = ["/javascripts/intranets.core.js"];
+    Pages.findOne({
+      raw: true,
+      where: { url: req.params.url, extension: req.params.extension },
+    }).then((page) => {
       data.page = page;
-      res.render('admin/pages/edit', data);
-    })
+      res.render("admin/pages/edit", data);
+    });
   });
-}
+};
 exports.tree = async (req, res) => {
   auth(req, res, () => {
     let data = {};
@@ -63,18 +57,29 @@ exports.tree = async (req, res) => {
     data.subtitle = "Home";
     data.debug = req.params.extension;
     data.css = [
-      '/stylesheets/tree.css'
+      "https://fonts.googleapis.com/icon?family=Material+Icons",
+      "/libs/material-design-lite/material.min.css",
+      "/css/tree.css",
     ];
-    data.js = [
-      '/javascripts/intranets.core.js'
-    ]
-    Pages.findAll({ raw: true, where: { url: req.params.url, extension: req.params.extension } }).then(elements => {
+    data.js = ["/javascripts/intranets.core.js"];
+    Pages.findAll({
+      raw: true,
+      where: { url: req.params.url, extension: req.params.extension },
+    }).then((elements) => {
       // Racine de l'arborescence (éléments sans parent)
-      
-      res.render('admin/pages/tree', data);
-    })
+      const rootElements = elements.filter((element) => !element.parent);
+      // Construction de la structure récursive en ajoutant les enfants à chaque élément
+      rootElements.forEach((rootElement) => {
+        rootElement.children = pm.getChildren(elements, rootElement.id);
+      });
+      pm.components().then((components) => {
+        data.components = components;
+        data.elements = rootElements;
+        res.render("admin/pages/tree", data);
+      });
+    });
   });
-}
+};
 exports.addComponentInPage = async (req, res) => {
   auth(req, res, () => {
     let body = req.body;
@@ -82,10 +87,10 @@ exports.addComponentInPage = async (req, res) => {
     let pages_parent = req.body.pages_parent;
     let element = req.body.element;
 
-    Pages.count({ where: { parent: pages_parent } }).then(count => {
+    Pages.count({ where: { parent: pages_parent } }).then((count) => {
       const newIndex = count + 1;
 
-      Pages.findOne({ raw: true, where: { id: pages_parent } }).then(page => {
+      Pages.findOne({ raw: true, where: { id: pages_parent } }).then((page) => {
         const Page = {
           url: page.url,
           parent: pages_parent,
@@ -93,18 +98,17 @@ exports.addComponentInPage = async (req, res) => {
           function: element,
           extension: page.extension,
           index: newIndex,
-          description: `Element add ${element} in ${page.name}`
+          description: `Element add ${element} in ${page.name}`,
         };
 
-        Pages.create(Page)
-          .then(data => {
-            console.log(data);
-            res.send({ result: true });
-          });
+        Pages.create(Page).then((data) => {
+          console.log(data);
+          res.send({ result: true });
+        });
       });
     });
   });
-}
+};
 exports.deleteComponentInPage = (req, res) => {
   auth(req, res, () => {
     let body = req.body;
@@ -113,13 +117,13 @@ exports.deleteComponentInPage = (req, res) => {
     Pages.destroy({
       where: { id: pages_id },
       cascade: true, // Supprime également les enfants en cascade
-      include: [{ model: Pages, as: 'children' }] // Inclut les enfants dans la suppression en cascade
+      include: [{ model: Pages, as: "children" }], // Inclut les enfants dans la suppression en cascade
     })
-      .then(result => {
+      .then((result) => {
         console.log(result);
         res.send({ result: true });
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(err);
         res.send({ result: false, error: err.message });
       });
@@ -132,17 +136,19 @@ exports.duplicateComponents = (req, res) => {
     console.log(parentId);
     if (duplicateChildren(parentId)) {
       res.send({ result: true });
-
     }
   });
 };
 const duplicateChildren = async (parentId) => {
   try {
     // Trouver la page parent spécifiée
-    const parentPage = await db.pages.findOne({ where: { id: parentId }, include: 'childPages' });
+    const parentPage = await db.pages.findOne({
+      where: { id: parentId },
+      include: "childPages",
+    });
 
     if (!parentPage) {
-      throw new Error('Page parent non trouvée.');
+      throw new Error("Page parent non trouvée.");
     }
 
     // Copier la page parent
@@ -152,27 +158,35 @@ const duplicateChildren = async (parentId) => {
     });
 
     // Copier les enfants de la page parent
-    const childPages = parentPage.childPages.map(child => ({
+    const childPages = parentPage.childPages.map((child) => ({
       ...child.get({ plain: true }),
       id: null, // Réinitialiser l'ID pour une nouvelle insertion
       parent: duplicatedParent.id, // Mettre à jour la référence parent
     }));
 
     // Créer les copies des enfants de la page parent
-    const duplicatedChildPages = await db.pages.bulkCreate(childPages, { returning: true });
+    const duplicatedChildPages = await db.pages.bulkCreate(childPages, {
+      returning: true,
+    });
 
     // Mettre à jour les références parent des enfants dupliqués
     for (const duplicatedChild of duplicatedChildPages) {
-      await db.pages.update({ parentId: duplicatedParent.id }, { where: { id: duplicatedChild.id } });
+      await db.pages.update(
+        { parentId: duplicatedParent.id },
+        { where: { id: duplicatedChild.id } }
+      );
     }
 
-    console.log('Parent et enfants dupliqués avec succès.');
+    console.log("Parent et enfants dupliqués avec succès.");
     return {
       duplicatedParent,
       duplicatedChildPages,
     };
   } catch (error) {
-    console.error('Erreur lors de la duplication du parent et des enfants :', error);
+    console.error(
+      "Erreur lors de la duplication du parent et des enfants :",
+      error
+    );
     throw error;
   }
 };
@@ -181,28 +195,27 @@ exports.propreties = (req, res) => {
     let data = {};
     data.title = "Propreties";
     data.subtitle = "Propreties";
-    data.js = [
-      '/javascripts/intranets.core.js'
-    ]
-    Pages.findOne({ raw: true, where: { id: req.query.id } }).then(element => {
-      pm.components('views/templates/', false).then(components => {
-        data.components = [];
-        data.propreties = [];
-        
-        res.render('admin/pages/propreties', data);
+    data.js = ["/javascripts/intranets.core.js"];
+    Pages.findOne({ raw: true, where: { id: req.query.id } }).then(
+      (element) => {
+        pm.components("views/templates/", false).then((components) => {
+          data.components = [];
+          data.propreties = [];
 
-      })
-    })
+          res.render("admin/pages/propreties", data);
+        });
+      }
+    );
   });
-}
+};
 exports.savePropreties = async (req, res) => {
   try {
     const id = req.query.id;
     const element = await Pages.findOne({ where: { id: id } });
 
     if (!element) {
-      console.log('Page not found');
-      return res.redirect('/admin');
+      console.log("Page not found");
+      return res.redirect("/admin");
     }
 
     let { template_name, ...post } = req.body;
@@ -213,7 +226,7 @@ exports.savePropreties = async (req, res) => {
     console.log(req.body);
     res.redirect(`/admin/pages/propreties?id=${id}`);
   } catch (error) {
-    console.log('Error updating page properties:', error);
+    console.log("Error updating page properties:", error);
     res.redirect(`/admin/pages/propreties?id=${req.query.id}`);
   }
-}
+};

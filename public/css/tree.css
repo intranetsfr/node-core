@@ -1,0 +1,33 @@
+body{
+    background-image: url('/images/bg_white.jpeg');
+    background-size: cover;
+}
+#components_list{
+    width: 100% !important;
+}
+ul {
+    padding: 8px;
+    margin: 0px;
+}
+ul li{
+    
+    list-style: none;
+    display: block;
+    margin: 4px 5px;
+    padding: 2px 5px;
+}
+ul li span{
+    display: inline-block;
+    padding: 6px 10px;
+}
+ul li:hover{
+    background-color: rgba(0,100,255,.2);
+}
+ul>li:hover{
+    color: black;
+    font-weight: bold;
+}
+
+.cursor--move{
+    cursor: move;
+}

@@ -16,12 +16,12 @@
 				<i class="material-icons">edit</i>
 			</a>
 			{% if link.parent > 0 %}
-			<a href="javascript:Intranets.pages.duplicateComponents({{link.id}})" class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-color--blue-100" style="min-width: 10px;width: 30px; height: 30px;">
-				<i class="material-icons mdl-color-text---orange--100">content_copy</i>
-			</a>
-			<a href="javascript:Intranets.pages.deleteComponent({{link.id}})" class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-color--red" style="min-width: 10px;width: 30px; height: 30px;">
-				<i class="material-icons mdl-color-text---red--100">delete</i>
-			</a>
+				<a href="javascript:Intranets.pages.duplicateComponents({{link.id}})" class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-color--blue-100" style="min-width: 10px;width: 30px; height: 30px;">
+					<i class="material-icons mdl-color-text---orange--100">content_copy</i>
+				</a>
+				<a href="javascript:Intranets.pages.deleteComponent({{link.id}})" class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-color--red" style="min-width: 10px;width: 30px; height: 30px;">
+					<i class="material-icons mdl-color-text---red--100">delete</i>
+				</a>
 			{% endif %}
 			{% if link.children %}
 				<ul>
@@ -36,20 +36,19 @@
 	{% for link in links %}
 		<li class="mdl-shadow--2dp">
 			<span>{{ link.name | capitalize}}</span>
+			<pre>
+			{{ link | json_encode}}
+			</pre>
 			{% if link.type == "file" %}
 				<ul>
-					{% for token in link.content.tokens %}
-						{% if token.token.macroName %}
 
-							<li class="mdl-shadow--2dp">
-								<span>{{token.token.macroName | lower}}</span>
+					<li class="mdl-shadow--2dp">
+						<span>{{token.token.macroName | lower}}</span>
 
-								<a href="javascript:Intranets.pages.addComponentInPage('{{token.token.macroName | lower}}')" class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-color--green" style="min-width: 10px;width: 30px; height: 30px;">
-									<i class="material-icons">add</i>
-								</a>
-							</li>
-						{% endif %}
-					{% endfor %}
+						<a href="javascript:Intranets.pages.addComponentInPage('{{token.token.macroName | lower}}')" class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-color--green" style="min-width: 10px;width: 30px; height: 30px;">
+							<i class="material-icons">add</i>
+						</a>
+					</li>
 				</ul>
 			{% endif %}
 			{% if link.children %}
@@ -66,9 +65,7 @@
 	<ul class="main-menu">
 		{{ macros.tree_pages(elements) }}
 	</ul>
-	<pre>
-
-</pre>
+	<pre>{{components | json_encode}}</pre>
 	{#{ elements | json_encode}#}
 
 	<dialog class="mdl-dialog" id="components_list" style="width: 50%">
@@ -86,7 +83,10 @@
 			</form>
 
 			<ul>
-				{{ macros.tree_components(components) }}
+				{#
+												{{ macros.tree_components(components) }}
+											
+											#}
 			</ul>
 		</div>
 		<div class="mdl-dialog__actions">
