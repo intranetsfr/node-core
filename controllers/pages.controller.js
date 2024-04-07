@@ -52,7 +52,6 @@ exports.edit = (req, res) => {
     ]
     Pages.findOne({ raw: true, where: { url: req.params.url, extension: req.params.extension } }).then(page => {
       data.page = page;
-
       res.render('admin/pages/edit', data);
     })
   });
@@ -71,16 +70,8 @@ exports.tree = async (req, res) => {
     ]
     Pages.findAll({ raw: true, where: { url: req.params.url, extension: req.params.extension } }).then(elements => {
       // Racine de l'arborescence (éléments sans parent)
-      const rootElements = elements.filter((element) => !element.parent);
-      // Construction de la structure récursive en ajoutant les enfants à chaque élément
-      rootElements.forEach((rootElement) => {
-        rootElement.children = pm.getChildren(elements, rootElement.id);
-      });
-      pm.components().then(components => {
-        data.components = components;
-        data.elements = rootElements;
-        res.render('admin/pages/tree', data);
-      })
+      
+      res.render('admin/pages/tree', data);
     })
   });
 }
@@ -197,25 +188,7 @@ exports.propreties = (req, res) => {
       pm.components('views/templates/', false).then(components => {
         data.components = [];
         data.propreties = [];
-        data.values = JSON.parse(element.props);
-        data.template_name = element.template_name;
-        for (let component of components) {
-          let c = component.content.tokens.filter(token => token.type === 'logic');
-          for (let nested of c) {
-            if (nested.token.macroName == element.function) {
-              data.element = element;
-              console.log(nested.token.defaults);
-              if(data.values){
-                for(let v in data.values){
-                  if(nested.token.defaults[v]){
-                    nested.token.defaults[v][0].value = data.values[v];
-                  }
-                }
-              }
-              data.propreties.push(nested.token.defaults);
-            }
-          }
-        }
+        
         res.render('admin/pages/propreties', data);
 
       })

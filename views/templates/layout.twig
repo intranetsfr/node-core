@@ -12,6 +12,9 @@
         {% endfor %}
     {% endif %}
 </head>
+{% if notUseBody is defined %}
+{% block body %}{% endblock %}
+{% else %}
 <body>
 {% block body %}{% endblock %}
 {% if js is defined %}
@@ -20,4 +23,6 @@
     {% endfor %}
 {% endif %}
 </body>
+
+{% endif %}
 </html>

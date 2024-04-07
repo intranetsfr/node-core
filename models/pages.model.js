@@ -1,24 +1,32 @@
 module.exports = (sequelize, Sequelize) => {
-    const Contact = sequelize.define("contact", {
-        firstname: {
+    const Page = sequelize.define("pages", {
+        url: {
             type: Sequelize.STRING,
             allowNull: false
         },
-        lastname: {
+        function: {
             type: Sequelize.STRING,
             allowNull: false
         },
-        email: {
+        extension: {
             type: Sequelize.STRING,
             allowNull: false
         },
-        message: {
+        index: {
+            type: Sequelize.STRING,
+            allowNull: false
+        },
+        parent: {
+            type: Sequelize.STRING,
+            allowNull: true
+        },
+        description: {
             type: Sequelize.TEXT,
-            allowNull: false
-        },
+            allowNull: true
+        }
         
     });
 
 
-    return Contact;
+    return Page;
 };

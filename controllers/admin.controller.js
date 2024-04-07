@@ -113,7 +113,10 @@ exports.home = async (req, res) => {
       data.subtitle = "Home";
       data.css = default_css;
       data.js = default_js;
-      res.render("admin/dashboard", data);
+      Pages.findAll().then(pages=>{
+        data.pages = pages;
+        res.render("admin/dashboard", data);
+      })
     });
   });
 };

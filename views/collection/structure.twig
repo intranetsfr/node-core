@@ -35,18 +35,11 @@
 				{% set previousKey = '' %}
 				{% set nextKey = '' %}
 				{% for key, value in structure %}
-
-
-					{% if loop.last %}
-						{% set nextKey = '' %}
-					{% else %}
-						{% set nextKey = attribute(structure, loop.next.key) %}
-					{% endif %}
 					<tr>
 						<td class="mdl-data-table__cell--non-numeric">{{ key }}</td>
 						<td>{{ value['type'] }}</td>
 						<td>
-							{% if(value['allowNull'])%}
+							{% if (value['allowNull'])%}
 								<span class="mdl-color-text--red">
 									no
 								</span>
@@ -57,11 +50,11 @@
 						<td>{{ value['primaryKey'] }}</td>
 						<td>{{ value['unique'] }}</td>
 						<td>
-							<a href="/admin/{{subtitle}}.structure?key={{key}}&before={{previousKey}}" class="mdl-button mdl-button--fab mdl-button--mini-fab" {% if loop.first or key == "id" or previousKey == "id" %} disabled {% endif %}>
+							<a href="/admin/{{subtitle}}.structure?key={{key}}&before={{loop.index0}}" class="mdl-button mdl-button--fab mdl-button--mini-fab" {% if loop.first or key == "id" or previousKey == "id" %} disabled {% endif %}>
 								<i class="material-icons">arrow_upward</i>
 							</a>
 
-							<a href="/admin/{{subtitle}}.structure?key={{key}}&after={{nextKey}}" class="mdl-button mdl-button--fab mdl-button--mini-fab" {% if loop.last or key == "id"%} disabled {% endif %}>
+							<a href="/admin/{{subtitle}}.structure?key={{key}}&after={{loop.index0 -1}}" class="mdl-button mdl-button--fab mdl-button--mini-fab" {% if loop.last or key == "id"%} disabled {% endif %}>
 								<i class="material-icons">arrow_downward</i>
 							</a>
 							{% if loop.last   %}{% endif %}
