@@ -113,10 +113,17 @@
 						<option value="boolean">Boolean</option>
 						<option value="date">Date</option>
 						<option value="file">File</option>
+						{% if tables %}
+								{% for table in tables %}
+							<optgroup label="{{table}}">
+									<option value="[@{{table}}]">[@{{table}}]</option>
+									<option value="@{{table}}">{@{{table}}}</option>
+							</optgroup>
+								{% endfor %}
+						{% endif %}
 					</select>
 					<label class="mdl-textfield__label" for="structure_type">Type :
 					</label>
-					{{ table_fields | json_encode}}
 				</div>
 				<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 					<label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="structure_isnull">
