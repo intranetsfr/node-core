@@ -2,9 +2,9 @@
 {% extends '../../templates/layout.twig' %}
 {% block body %}
 	<frameset cols="60%,40%" borderColor="#0a66c2" framespacing="20" border="10">
-		<frame src="/{{page.url}}{{page.extension}}"/>
-		<frameset rows="100%,0%" id="frameset_editor">
-			<frame src="/admin/pages/{{page.url}}{{page.extension}}.tree"  id="tree"/>
+		<frame src="/{{filename}}{{extension}}"/>
+		<frameset rows="100%,0%" id="frames">
+			<frame src="/admin/pages/{{filename}}{{extension}}.tree"  id="tree"/>
 			<frame src="" id="propreties"/>
 		</frameset>
 	</frameset>

@@ -1,4 +1,4 @@
-{% extends '../../layout.twig' %}
+{% extends '../../templates/layout.twig' %}
 {% block body %}
 	<div class="mdl-grid">
 		<div class="mdl-cell mdl-cell--12-col" align="end">
@@ -6,8 +6,7 @@
 		</div>
 		<div class="mdl-cell mdl-cell--12-col">
 			<fieldset>
-				<legend>Edit
-					{{element.function | upper}}</legend>
+				<legend>{{element.function | upper}}</legend>
 				<form action="/admin/pages/propreties?id={{element.id}}" method="post">
 					{% if element.function != "html" %}
 						<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
@@ -18,8 +17,9 @@
 							<span class="mdl-textfield__error">Input is not a number!</span>
 						</div>
 					{% endif %}
-					{% for key,field in propreties[0] %}
-						{% set type = 'admin/pages/type/' ~ field[0].type ~ '.twig'%}
+					{% for key, e in element.data %}
+						{% set type = 'admin/pages/type/' ~ element.tagName ~ '/' ~ key~ '.twig'%}
+						{{type}}
 						{% with { field: field[0],name:key } %}
 						{% include type %}
 						{% endwith %}
@@ -35,4 +35,3 @@
 		</div>
 	</div>
 {% endblock %}
-

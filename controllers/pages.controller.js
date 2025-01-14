@@ -1,25 +1,61 @@
 ﻿const db = require("../models");
 const auth = require("../middleware/auth");
-const pm = require("../middleware/page");
+
 const moment = require("moment");
 moment.locale("fr");
 const Pages = db.pages;
-exports.contact = (req, res) => {
-  auth(req, res, () => {
-    const Message = {
-      firstname: req.body.firstname,
-      lastname: req.body.lastname,
-      email: req.body.email,
-      message: req.body.message,
-    };
-    // Save Users in the database
-    Pages.create(Message).then((data) => {
-      res.send({ result: true, message: "Votre message a bien été envoyé" });
-    });
-  });
-};
+const fs = require("fs");
+const htmlparser2 = require("htmlparser2");
+const { JSDOM } = require("jsdom");
+
+const savedFolder = "./saved/";
+const pagesFolder = `${savedFolder}pages/`;
+const templatesFolder = `${savedFolder}templates/`;
+
+function findElementById(element, targetId) {
+  if (element.id == targetId) {
+    return element;
+  }
+  
+  // Parcours récursif des enfants
+  for (let child of element.children) {
+      const found = findElementById(child, targetId);
+      if (found) {
+          return found;
+      }
+  }
+  
+  // Retourne null si aucun élément avec cet ID n'a été trouvé
+  return null;
+}
+function getDataAttributes(element) {
+  const dataAttributes = {};
+
+  // `element.dataset` contient tous les attributs data-* en tant que paires clé-valeur
+  for (const key in element.dataset) {
+      dataAttributes[key] = element.dataset[key];
+  }
+
+  return dataAttributes;
+}
 exports.create = (req, res) => {
   auth(req, res, () => {
+    let data = {};
+    data.title = "Editor";
+    let filename = req.body.pages__url;
+
+    let timestampId = moment().unix();
+    const content = `<div name="document" id="${timestampId}"></div>`;
+    fs.writeFile(`${pagesFolder}/${filename}.html`, content, (err) => {
+      if (err) {
+        console.error(err);
+        res.redirect(`/admin/?error=${err}`);
+      } else {
+        res.redirect(`/admin/pages/${filename}.html.edit`);
+      }
+    });
+
+    /*
     const Page = {
       url: req.body.pages__url,
       function: req.body.pages__extension.replace(".", ""),
@@ -31,52 +67,80 @@ exports.create = (req, res) => {
     console.log(Page);
     Pages.create(Page).then((data) => {
       res.redirect("/admin");
-    });
+    });*/
   });
 };
 exports.edit = (req, res) => {
   auth(req, res, () => {
     let data = {};
-    data.title = "Pages";
-    data.subtitle = "Home";
-    data.debug = req.params.extension;
-    data.js = ["/javascripts/intranets.core.js"];
-    Pages.findOne({
-      raw: true,
-      where: { url: req.params.url, extension: req.params.extension },
-    }).then((page) => {
-      data.page = page;
-      res.render("admin/pages/edit", data);
-    });
+    data.title = "Editor";
+    let filename = req.params.filename;
+    data.filename = `${filename}.html`;
+
+    fs.readFile(
+      `${pagesFolder}${data.filename}`,
+      "utf8",
+      (err, contentFile) => {
+        if (err) {
+          console.error(err);
+          data.error = err;
+          res.render("admin/pages/edit", data);
+        }
+        data.contentFile = contentFile;
+        res.render("admin/pages/edit", data);
+      }
+    );
   });
 };
 exports.tree = async (req, res) => {
   auth(req, res, () => {
     let data = {};
-    data.title = "Pages";
-    data.subtitle = "Home";
-    data.debug = req.params.extension;
-    data.css = [
-      "https://fonts.googleapis.com/icon?family=Material+Icons",
-      "/libs/material-design-lite/material.min.css",
-      "/css/tree.css",
-    ];
-    data.js = ["/javascripts/intranets.core.js"];
-    Pages.findAll({
-      raw: true,
-      where: { url: req.params.url, extension: req.params.extension },
-    }).then((elements) => {
-      // Racine de l'arborescence (éléments sans parent)
-      const rootElements = elements.filter((element) => !element.parent);
-      // Construction de la structure récursive en ajoutant les enfants à chaque élément
-      rootElements.forEach((rootElement) => {
-        rootElement.children = pm.getChildren(elements, rootElement.id);
-      });
-      pm.components().then((components) => {
-        data.components = components;
-        data.elements = rootElements;
+    data.title = "Editor";
+    let filename = req.params.filename;
+    data.filename = `${filename}.html`;
+    const { id, action } = req.query; // Extraction des paramètres de requête
+    const filePath = `${pagesFolder}${data.filename}`;
+
+    fs.readFile(filePath, "utf8", (err, contentFile) => {
+      if (err) {
+        console.error(err);
+        data.error = err;
+        res.render("admin/pages/editor", data);
+        return;
+      }
+      function parseNode(node) {
+        if (node.type === "tag") {
+          const parsedNode = {
+            tag: node.name,
+            id: node.attribs.id,
+            name: node.attribs.name,
+            class: node.attribs.class ? node.attribs.class.split(" ") : [],
+            children: [],
+            nodeRef: node, // Référence vers le nœud original pour les modifications
+          };
+
+          if (node.children) {
+            parsedNode.children = node.children
+              .map(parseNode)
+              .filter((child) => child); // Exclure les éléments `null`
+          }
+          return parsedNode;
+        }
+        return null;
+      }
+
+      const dom = htmlparser2.parseDocument(contentFile).children;
+      const tree = dom.map(parseNode).filter((node) => node);
+      
+      
+      if (action === "add" && id !== undefined) {
+        res.redirect(`/admin/pages/${data.filename}.tree`);
+      } else if (action === "copy" && id !== undefined) {
+        res.redirect(`/admin/pages/${data.filename}.tree`);
+      } else {
+        data.tree = tree;
         res.render("admin/pages/tree", data);
-      });
+      }
     });
   });
 };
@@ -193,19 +257,48 @@ const duplicateChildren = async (parentId) => {
 exports.propreties = (req, res) => {
   auth(req, res, () => {
     let data = {};
-    data.title = "Propreties";
-    data.subtitle = "Propreties";
-    data.js = ["/javascripts/intranets.core.js"];
-    Pages.findOne({ raw: true, where: { id: req.query.id } }).then(
-      (element) => {
-        pm.components("views/templates/", false).then((components) => {
-          data.components = [];
-          data.propreties = [];
+    data.title = "Proprety";
 
-          res.render("admin/pages/propreties", data);
-        });
+    const filename = req.params.filename;
+    data.elementId = parseInt(req.query.id, 10);
+    const filepath = `${pagesFolder}/${filename}.html`;
+
+    // Lecture du fichier HTML
+    fs.readFile(filepath, "utf8", (err, html) => {
+      if (err) {
+        console.error(err);
+        data.error = "Erreur lors de la lecture du fichier.";
+        res.render("admin/pages/propreties", data);
+        return;
       }
-    );
+
+      // Manipuler le DOM du fichier HTML avec jsdom
+      const dom = new JSDOM(html);
+      const document = dom.window.document;
+
+      // Démarrer la recherche à partir de `<body>`
+      const element = findElementById(
+        document,
+        data.elementId
+      );
+      data.js = ["/javascripts/intranets.core.js"];
+      data.update = req.query.update;
+      if (element) {
+        // Extraire les informations nécessaires
+        console.log('')
+        data.element = {};
+        data.element.tagName = element.tagName.toLowerCase();
+        data.element.name = element.name;
+        data.element.id = element.id;
+        data.element.data = getDataAttributes(element);
+        data.element.classes = Array.from(element.classList);
+        console.log(element.data);
+      } else {
+        data.error = "Élément non trouvé.";
+      }
+      res.render("admin/pages/propreties", data);
+    });
+    
   });
 };
 exports.savePropreties = async (req, res) => {

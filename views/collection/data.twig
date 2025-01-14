@@ -29,8 +29,9 @@
 				{% for data in tableData %}
 					<tr>
 						{% for key, value in structure %}
-							<td class="mdl-data-table__cell--non-numeric">{{ data[key] |truncate(50) }}</td>
+							<td class="mdl-data-table__cell--non-numeric">{{ data[key] |truncate(20) }}</td>
 						{% endfor %}
+						
 						<td>
 							<button id="menu-top-left__{{data.id}}" class="mdl-button mdl-js-button mdl-button--icon">
 								<i class="material-icons">more_vert</i>
@@ -47,7 +48,7 @@
 										Delete
 									</a>
 								</li>
-								
+
 							</ul>
 
 						</td>

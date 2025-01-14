@@ -11,6 +11,8 @@
             <link rel="stylesheet" href="{{ c }}"/>
         {% endfor %}
     {% endif %}
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="/libs/material-design-lite/material.min.css"/>
 </head>
 {% if notUseBody is defined %}
 {% block body %}{% endblock %}
@@ -22,6 +24,7 @@
         <script type="text/javascript" src="{{ j }}"></script>
     {% endfor %}
 {% endif %}
+        <script type="text/javascript" src="/libs/material-design-lite/material.min.js"></script>
 </body>
 
 {% endif %}

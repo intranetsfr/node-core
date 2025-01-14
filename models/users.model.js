@@ -25,6 +25,12 @@ module.exports = (sequelize, Sequelize) => {
           isEmail: true,
         },
       },
+
+      birthday: {
+        type: Sequelize.DATE,
+        allowNull: true,
+        
+      },
       password: {
         type: Sequelize.STRING,
         allowNull: false,
@@ -55,6 +61,7 @@ module.exports = (sequelize, Sequelize) => {
             gender: "male",
             email: "demo@intranets.fr",
             password: hash,
+            
           },
         });
         let debug = false;

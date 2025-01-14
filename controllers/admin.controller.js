@@ -81,8 +81,8 @@ exports.auth = async (req, res) => {
       where: { email: users_email },
       raw: true,
     });
+    console.log(user);
     if (user && bcrypt.compareSync(users_password, user.password)) {
-      console.log(process.env.TOKEN_KEY);
       const token = jwt.sign(
         { user_id: user.id, users_email: users_email },
         process.env.TOKEN_KEY,
@@ -96,7 +96,7 @@ exports.auth = async (req, res) => {
     } else {
       const data = { error: "Aucun compte" };
       console.table(user);
-      return res.render("users/login", data);
+      return res.redirect("/admin/auth?error=no_account");
     }
   } catch (err) {
     console.error(err);

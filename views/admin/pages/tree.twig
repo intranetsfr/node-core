@@ -1,97 +1,94 @@
+
+{% set menu = false %}
+{% macro renderTree(tree, level, filename) %}
+    <ul class="tree_list">
+        {% for item in tree %}
+            <li>
+                <a href="javascript:select({{ item.id }})"
+                   onmouseover="highlightElement({{ item.id  }})"
+                   onmouseout="removeHighlight({{ item.id  }})">
+                    <strong>{{ item.tag }}</strong>
+					{% if item.class is not empty %}
+                    {#
+                        (Classes: {{ item.class | join(', ') }})
+                    #}
+                    {% endif %}
+                </a>
+                    <a href="/admin/pages/{{filename}}.tree?id={{item.id}}&action=add">➕ add</a>
+                    <a href="/admin/pages/{{filename}}.tree?id={{item.id}}&action=copy">📁 copy</a>
+                {% if item.children is not empty %}
+                    {{ _self.renderTree(item.children, level + 1, filename) }}
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% endmacro %}
+
+{% from _self import renderTree %}
 {% extends '../../templates/layout.twig' %}
-{% macro tree_pages(links) %}
-	{% import _self as macros %}
-	{% for link in links %}
-		<li class="mdl-shadow--2dp">
-			{% if link.parent > 0 %}
-				<a href="javascript:void(0)" class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-color--blue cursor--move" style="min-width: 10px;width: 30px; height: 30px;">
-					<i class="material-icons">drag_indicator</i>
-				</a>
-			{% endif %}
-			<span title="{{ link.index}}">{{ link.function | capitalize}}</span>
-			<a href="javascript:Intranets.pages.openComponents({{link.id}})" class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-color--green" style="min-width: 10px;width: 30px; height: 30px;">
-				<i class="material-icons">add</i>
-			</a>
-			<a href="javascript:Intranets.pages.editComponent({{link.id}})" class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-color--orange" style="min-width: 10px;width: 30px; height: 30px;">
-				<i class="material-icons">edit</i>
-			</a>
-			{% if link.parent > 0 %}
-				<a href="javascript:Intranets.pages.duplicateComponents({{link.id}})" class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-color--blue-100" style="min-width: 10px;width: 30px; height: 30px;">
-					<i class="material-icons mdl-color-text---orange--100">content_copy</i>
-				</a>
-				<a href="javascript:Intranets.pages.deleteComponent({{link.id}})" class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-color--red" style="min-width: 10px;width: 30px; height: 30px;">
-					<i class="material-icons mdl-color-text---red--100">delete</i>
-				</a>
-			{% endif %}
-			{% if link.children %}
-				<ul>
-					{{ macros.tree_pages(link.children) }}
-				</ul>
-			{% endif %}
-		</li>
-	{% endfor %}
-{% endmacro %}
-{% macro tree_components(links) %}
-	{% import _self as macros %}
-	{% for link in links %}
-		<li class="mdl-shadow--2dp">
-			<span>{{ link.name | capitalize}}</span>
-			<pre>
-			{{ link | json_encode}}
-			</pre>
-			{% if link.type == "file" %}
-				<ul>
+{% block body %}
 
-					<li class="mdl-shadow--2dp">
-						<span>{{token.token.macroName | lower}}</span>
+    <body class="margin--0">
+	
+        {{ renderTree(tree, 0, filename) }}
+        <script>
+            function findElementByIndexAndLevel(root, tagIndex, level, currentLevel = -1, currentIndex = { value: -1 }) {
+               
+               if (currentLevel === level) {
+                    currentIndex.value++; // Incrémenter le compteur pour l'index
+                    if (currentIndex.value === tagIndex) {
+                        return root; // On a trouvé l'élément
+                    }
+                }
 
-						<a href="javascript:Intranets.pages.addComponentInPage('{{token.token.macroName | lower}}')" class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-color--green" style="min-width: 10px;width: 30px; height: 30px;">
-							<i class="material-icons">add</i>
-						</a>
-					</li>
-				</ul>
-			{% endif %}
-			{% if link.children %}
-				<ul>
-					{{ macros.tree_components(link.children) }}
-				</ul>
-			{% endif %}
-		</li>
-	{% endfor %}
-{% endmacro %}
+                // Parcourir les enfants pour continuer la recherche
+                for (let child of root.children) {
+                    const found = findElementByIndexAndLevel(child, tagIndex, level, currentLevel + 1, currentIndex);
+                    if (found) {
+                        return found; // Retourner l'élément si trouvé
+                    }
+                }
 
-{% import _self as macros %}
-{% block body%}
-	<ul class="main-menu">
-		{{ macros.tree_pages(elements) }}
-	</ul>
-	<pre>{{components | json_encode}}</pre>
-	{#{ elements | json_encode}#}
+                return null; // Retourne null si l'élément n'est pas trouvé
+            }
 
-	<dialog class="mdl-dialog" id="components_list" style="width: 50%">
+            function highlightElement(tagIndex, level) {
+                const frameDocument = window.parent.frames[0].document;
 
-		<h6 class="mdl-dialog__title">Components List</h4>
-		<div
-			class="mdl-dialog__content">
-			<!-- Textfield with Floating Label -->
+                // Commence la recherche dans le `<main>` pour ignorer `<body>` et `<main>`
+                const element = findElementByIndexAndLevel(frameDocument.querySelector('body'), tagIndex, level);
 
-			<form action="#">
-				<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-					<input class="mdl-textfield__input" type="text" id="components__search">
-					<label class="mdl-textfield__label" for="components__search">Search component :</label>
-				</div>
-			</form>
+                if (element) {
+                    element.classList.add('highlight');
+                }
+            }
 
-			<ul>
-				{#
-												{{ macros.tree_components(components) }}
-											
-											#}
-			</ul>
-		</div>
-		<div class="mdl-dialog__actions">
-			<button type="button" class="mdl-button close">Close</button>
-		</div>
-	</dialog>
+            function removeHighlight(tagIndex, level) {
+                const frameDocument = window.parent.frames[0].document;
+
+                const element = findElementByIndexAndLevel(frameDocument.querySelector('body'), tagIndex, level);
+
+                if (element) {
+                    element.classList.remove('highlight');
+                }
+            }
+            function select(id) {
+                let parent = window.parent;
+                let frames = parent.document.getElementById("frames");
+                const frameDocument = window.parent.frames[2].document;
+                let filename = "{{filename}}";
+                parent[2].location.href = `/admin/pages/${filename}.propreties?id=${id}`;
+                frames.setAttribute("rows", "50%,50%");
+                highlightElement(tagIndex, level);
+                //console.log(parent[2].location.href);
+                /*
+                const element = findElementByIndexAndLevel(frameDocument.querySelector('main'), tagIndex, level);
+
+                if (element) {
+                    element.classList.remove('highlight');
+                }*/
+            }
+</script>
+
+    </body>
 {% endblock %}
-
